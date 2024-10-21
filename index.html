@@ -8,32 +8,49 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: #e0e7ff; /* Soft light background color */
+            display: flex; /* Use flexbox for layout */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 100vh; /* Full viewport height */
+            margin: 0; /* Remove default margin */
+            flex-direction: column; /* Stack header and login box vertically */
         }
         header {
-            background-color: black;
+            background-color: #1e3a8a; /* Dark blue for the header */
             color: white;
-            padding: 15px;
-            text-align: left;
+            padding: 15px 30px; /* Add padding for a better look */
+            text-align: center; /* Center header text */
+            width: 100%; /* Full width */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+            position: absolute; /* Keep header at the top */
+            top: 0; /* Align to the top */
+            z-index: 1; /* Ensure header is above other elements */
         }
         header h1 {
             margin: 0;
-            display: inline-block;
+            font-family: 'Times New Roman', Times, serif; /* Classic font style */
+            font-size: 24px; /* Adjusted font size */
         }
         header span {
-            margin-left: 10px;
-            font-size: 18px;
+            display: block; /* Make the caption below the header name */
+            margin-top: 5px; /* Space between header and caption */
+            font-size: 16px; /* Adjusted font size */
+            font-style: italic; /* Italic font style */
+            color: white; /* Ensure caption is visible */
         }
         .container {
-            width: 50%;
-            margin: 50px auto;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px; /* Size for the login box */
+            margin-top: 80px; /* Space above the login box */
+            background-color: white; /* White background for the login box */
+            padding: 20px; /* Reduced padding */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border-radius: 10px; /* Increased roundness */
+            text-align: center; /* Center text in container */
         }
         .container h2 {
-            text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Adjusted margin */
+            font-size: 20px; /* Adjusted font size */
         }
         form {
             display: flex;
@@ -41,31 +58,82 @@
         }
         label {
             margin-bottom: 5px;
+            font-size: 14px; /* Adjusted font size */
         }
         input {
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 8px; /* Reduced padding */
+            margin-bottom: 10px; /* Adjusted margin */
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 4px; /* Reduced roundness */
+            font-size: 14px; /* Adjusted font size */
         }
         button {
-            padding: 10px;
-            background-color: black;
+            padding: 8px; /* Reduced padding */
+            background-color: blue; /* Blue color for the login button */
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px; /* Reduced roundness */
             cursor: pointer;
+            transition: background-color 0.3s; /* Smooth transition for button hover */
+            font-size: 14px; /* Adjusted font size */
         }
         button:hover {
-            background-color: #555;
+            background-color: darkblue; /* Change button color on hover */
+            transform: translateY(-1px); /* Slight lift effect */
+        }
+        .welcome-container {
+            display: none; /* Hidden by default */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            flex-direction: column; /* Stack items vertically */
+            text-align: center; /* Center text */
+            width: 100%; /* Full width */
+            height: 100vh; /* Full viewport height */
+            position: relative; /* Position relative for header alignment */
+            background: #e0e7ff; /* Match the background color */
         }
         .welcome-box {
-            margin-top: 50px;
             padding: 20px;
             border: 2px solid black;
             background-color: white;
             text-align: center;
             font-family: 'Times New Roman', Times, serif;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+            transform: scale(0.9); /* Initial scale for the effect */
+            opacity: 0; /* Initially hidden */
+            animation: fadeIn 0.5s forwards; /* Animation */
+            display: inline-block; /* Inline block for proper width */
+            margin-top: 20px; /* Space above the message box */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); } /* Fade in with upward movement */
+            to { opacity: 1; transform: translateY(0); } /* Final position */
+        }
+        a.forgot-password {
+            color: blue; /* Blue color for the forgot password link */
+            text-decoration: none; /* Remove underline */
+            font-size: 14px; /* Adjusted font size */
+        }
+        a.forgot-password:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+        a.create-account {
+            color: red; /* Red color for "Create New Account" link */
+            font-size: 14px; /* Adjusted font size */
+        }
+        /* New button for going back to login */
+        .welcome-box button {
+            padding: 10px;
+            background-color: #1e3a8a; /* Same as header color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px; /* Space above the button */
+            transition: background-color 0.3s;
+        }
+        .welcome-box button:hover {
+            background-color: darkblue; /* Darken on hover */
         }
     </style>
 </head>
@@ -86,13 +154,20 @@
         <input type="password" id="password" name="password" required>
         
         <button type="button" onclick="login()">Login</button>
-        <p>Don't have an account? <a href="#" onclick="register()">Create New Account</a></p>
+        <p>Forgot your password? <a href="#" class="forgot-password" onclick="forgotPassword()">Click here</a></p>
+        <p>Don't have an account? <a href="#" class="create-account" onclick="register()">Create New Account</a></p>
     </form>
 </div>
 
-<div class="container" id="welcome-container" style="display:none;">
-    <div class="welcome-box">
-        <h2>Hai, Welcome to my World</h2>
+<div class="welcome-container" id="welcome-container">
+    <header>
+        <h1>Non-Tech Guy</h1>
+        <span>Website</span>
+    </header>
+    <div class="welcome-box" id="message-box">
+        <h2>Hai, Welcome to my World</h2> <!-- Centered welcome message -->
+        <p>We're glad to have you here! Explore our features and enjoy your visit.</p>
+        <button onclick="goBack()">Go Back to Login</button> <!-- Back button -->
     </div>
 </div>
 
@@ -105,7 +180,15 @@
         // For demo purposes, let's assume successful login with any username/password
         if (username && password) {
             document.getElementById('login-container').style.display = 'none';
-            document.getElementById('welcome-container').style.display = 'block';
+            document.getElementById('welcome-container').style.display = 'flex'; // Use flex to align items
+            // Trigger animation for the welcome box
+            const messageBox = document.getElementById('message-box');
+            messageBox.style.opacity = '0'; // Reset opacity for animation
+            messageBox.style.transform = 'scale(0.9)'; // Reset scale for animation
+            setTimeout(() => {
+                messageBox.style.opacity = '1'; // Fade in
+                messageBox.style.transform = 'scale(1)'; // Scale up
+            }, 10); // Small delay for the animation effect
         } else {
             alert('Please enter your credentials');
         }
@@ -114,6 +197,16 @@
     function register() {
         alert('Redirect to registration page functionality here.');
         // Add registration logic if necessary or link to another registration page.
+    }
+
+    function forgotPassword() {
+        alert('Forgot password functionality here.');
+        // Add logic for password recovery if necessary.
+    }
+
+    function goBack() {
+        document.getElementById('welcome-container').style.display = 'none';
+        document.getElementById('login-container').style.display = 'block';
     }
 </script>
 
