@@ -60,12 +60,35 @@
             margin-bottom: 5px;
             font-size: 14px;
         }
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
         input {
             padding: 8px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 14px;
+            flex-grow: 1; /* Makes input take available space */
+        }
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            margin-left: 5px;
+            display: none; /* Initially hidden */
+            font-size: 20px; /* Font size for the tick and cross */
+        }
+        input.success {
+            border-color: green; /* Green border for successful input */
+        }
+        input.error {
+            border-color: red; /* Red border for error */
+        }
+        input:focus {
+            outline: none; /* Removes the default thick border */
+            border-color: blue; /* Optional: Custom border color when focused */
+            box-shadow: 0 0 5px rgba(0, 0, 255, 0.5); /* Optional: Soft blue shadow */
         }
         button {
             padding: 8px;
@@ -134,10 +157,16 @@
     <h2>Login</h2>
     <form id="loginForm">
         <label for="login-username">Username:</label>
-        <input type="text" id="login-username" name="login-username" required>
+        <div class="input-group">
+            <input type="text" id="login-username" name="login-username" required>
+            <span class="status-icon" id="username-status"></span>
+        </div>
         
         <label for="login-password">Password:</label>
-        <input type="password" id="login-password" name="login-password" required>
+        <div class="input-group">
+            <input type="password" id="login-password" name="login-password" required>
+            <span class="status-icon" id="password-status"></span>
+        </div>
         
         <button type="button" onclick="login()">Login</button>
         <p>Forgot your password? <a href="#" class="forgot-password" onclick="forgotPassword()">Click here</a></p>
@@ -188,42 +217,113 @@
 
     // Register function
     function register() {
-        const username = document.getElementById('register-username').value;
-        const password = document.getElementById('register-password').value;
+        const username = document.getElementById('register-username');
+        const password = document.getElementById('register-password');
 
-        // Simple validation
-        if (username && password) {
+        if (username.value && password.value) {
+            username.classList.add('success');
+            password.classList.add('success');
+            username.classList.remove('error');
+            password.classList.remove('error');
+
             // Store user in localStorage
-            localStorage.setItem(username, password);
+            localStorage.setItem(username.value, password.value);
             alert('Registration successful! You can now login.');
             showLogin();
         } else {
-            alert('Please fill out all fields.');
+            alert('Please fill in all fields.');
         }
     }
 
     // Login function
     function login() {
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
+        const username = document.getElementById('login-username');
+        const password = document.getElementById('login-password');
+        const usernameStatus = document.getElementById('username-status');
+        const passwordStatus = document.getElementById('password-status');
 
         // Check if user exists in localStorage
-        const storedPassword = localStorage.getItem(username);
-        if (storedPassword && storedPassword === password) {
+        const storedPassword = localStorage.getItem(username.value);
+        let isValid = true;
+
+        if (storedPassword && storedPassword === password.value) {
+            username.classList.add('success');
+            password.classList.add('success');
+            usernameStatus.innerHTML = '✓'; // Show tick for username
+            passwordStatus.innerHTML = '✓'; // Show tick for password
+            usernameStatus.style.display = 'inline-block'; // Show the status icon
+            passwordStatus.style.display = 'inline-block'; // Show the status icon
             document.getElementById('login-container').style.display = 'none';
             document.getElementById('welcome-container').style.display = 'flex';
+            username.value = '';
+            password.value = '';
         } else {
-            alert('Incorrect username or password.');
+            username.classList.add('error');
+            password.classList.add('error');
+            usernameStatus.innerHTML = '✗'; // Show cross for username
+            passwordStatus.innerHTML = '✗'; // Show cross for password
+            usernameStatus.style.display = 'inline-block'; // Show the status icon
+            passwordStatus.style.display = 'inline-block'; // Show the status icon
+            alert('Invalid username or password. Please try again.');
+            isValid = false;
+        }
+
+        if (isValid) {
+            usernameStatus.style.color = 'green'; // Set status to green for correct username
+            passwordStatus.style.color = 'green'; // Set status to green for correct password
+        } else {
+            usernameStatus.style.color = 'red'; // Set status to red for incorrect username
+            passwordStatus.style.color = 'red'; // Set status to red for incorrect password
         }
     }
 
+    // Real-time input validation
+    document.getElementById('login-username').addEventListener('input', function() {
+        const usernameStatus = document.getElementById('username-status');
+        if (this.value && localStorage.getItem(this.value)) {
+            this.classList.add('success');
+            this.classList.remove('error');
+            usernameStatus.innerHTML = '✓'; // Show tick for valid username
+            usernameStatus.style.display = 'inline-block'; // Show the status icon
+            usernameStatus.style.color = 'green'; // Set status to green
+        } else {
+            this.classList.remove('success');
+            this.classList.add('error');
+            usernameStatus.innerHTML = '✗'; // Show cross for invalid username
+            usernameStatus.style.display = 'inline-block'; // Show the status icon
+            usernameStatus.style.color = 'red'; // Set status to red
+        }
+    });
+
+    document.getElementById('login-password').addEventListener('input', function() {
+        const username = document.getElementById('login-username').value;
+        const passwordStatus = document.getElementById('password-status');
+        if (username && localStorage.getItem(username) === this.value) {
+            this.classList.add('success');
+            this.classList.remove('error');
+            passwordStatus.innerHTML = '✓'; // Show tick for valid password
+            passwordStatus.style.display = 'inline-block'; // Show the status icon
+            passwordStatus.style.color = 'green'; // Set status to green
+        } else {
+            this.classList.remove('success');
+            this.classList.add('error');
+            passwordStatus.innerHTML = '✗'; // Show cross for invalid password
+            passwordStatus.style.display = 'inline-block'; // Show the status icon
+            passwordStatus.style.color = 'red'; // Set status to red
+        }
+    });
+
+    // Forgot password function
     function forgotPassword() {
-        alert('Forgot password functionality here.');
+        alert('Password recovery is not implemented in this demo.');
     }
 
+    // Go back to login function
     function goBack() {
         document.getElementById('welcome-container').style.display = 'none';
         document.getElementById('login-container').style.display = 'block';
+        document.getElementById('login-username').value = '';
+        document.getElementById('login-password').value = '';
     }
 </script>
 
